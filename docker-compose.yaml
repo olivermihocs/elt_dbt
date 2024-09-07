@@ -1,0 +1,61 @@
+services:
+  src_postgres:
+    image: postgres:15.7
+    ports:
+      - "5433:5432" #exposed port, to access on localhost
+    networks:
+      - elt_network
+    environment:
+      POSTGRES_DB : src_db
+      POSTGRES_USER : postgres #default user and pw
+      POSTGRES_PASSWORD : secret
+    volumes:
+      - "./src_db_init:/docker-entrypoint-initdb.d"
+
+  dest_postgres:
+    image: postgres:15.7
+    ports:
+      - "5434:5432" #exposed port, to access on localhost
+    networks:
+      - elt_network
+    environment:
+      POSTGRES_DB : dest_db
+      POSTGRES_USER : postgres #default user and pw
+      POSTGRES_PASSWORD : secret
+    
+  elt_script:
+    build:
+      context: ./elt
+      dockerfile: Dockerfile
+    command: [ "python" , "script.py" ]
+    networks:
+      - elt_network
+    depends_on:
+      - src_postgres
+      - dest_postgres
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:1.4.7
+    command:
+      [
+        "run",
+        "--profiles-dir",
+        "/root",
+        "--project-dir",
+        "/dbt",
+        "--full-refresh"
+      ]
+    networks:
+      - elt_network
+    volumes:
+      - ./dbt_project:/dbt
+      - ~/.dbt:/root
+    depends_on:
+      elt_script:
+          condition: service_completed_successfully
+    environment:
+      DBT_PROFILE: default
+      DBT_TARGET: dev
+
+networks:
+  elt_network:
+    driver: bridge
