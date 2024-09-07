@@ -24,4 +24,4 @@ Querying the databases:
 
 We utilize dbt on top of this to create more tables and queries. (dbt_project)
 
-There is another version of this project which includes task scheduling and implementing a webserver with Airflow: ![ELT DBT with Airflow](github.com/olivermihocs/[elt_dbt](https://github.com/olivermihocs/elt_dbt_airflow/).
+There is another version of this project which includes task scheduling and implementing a webserver with Airflow: [ELT DBT with Airflow](https://github.com/olivermihocs/elt_dbt_airflow/).
