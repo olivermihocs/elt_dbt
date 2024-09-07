@@ -10,7 +10,7 @@ There are two postgreSQL databases:
 
 # elt/script.py:
 
-We populate src_db with the `init.sql` file in src_db_init.
+We populate src_db with the `init.sql` file in src_db_init. <br/>
 This data is backed up with `pg_dump`, and this data is used to populate dest_db.
 
 Querying the databases:
